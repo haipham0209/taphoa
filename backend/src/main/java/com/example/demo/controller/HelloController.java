@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("/")  // Đảm bảo có mapping "/" đúng
+    @GetMapping("/hello")
     public String hello() {
-        return "Xin chào từ Spring Boot!";
+        return "Xin chào từ Spring Boots!";
     }
 }
