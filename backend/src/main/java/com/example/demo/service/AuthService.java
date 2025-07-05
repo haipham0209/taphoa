@@ -35,14 +35,17 @@ public class AuthService {
 
     public LoginResponseDto login(LoginRequestDto request) {
         // 1. Xác thực user
+    	System.out.println("Debug");
         Authentication authentication = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getEmail(), request.getPassword()
             )
+            
         );
-
+        
+        System.out.println("After authenticate");
         // 2. Lấy user từ DB
-        User user = userRepo.findByUserName(request.getEmail())
+        User user = userRepo.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 3. Tạo access token

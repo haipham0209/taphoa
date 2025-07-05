@@ -24,6 +24,7 @@ public class User {
 
     private String role;
     
+    @Column(unique = true)
     private String email;
 
     private String token;
