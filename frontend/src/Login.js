@@ -1,48 +1,71 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Ngăn reload trang
 
-    // Ví dụ check tạm user/pass cứng (sau bạn thay bằng API gọi backend)
-    if (username === "admin" && password === "123456") {
-      setMessage("Login successful!");
-    } else {
-      setMessage("Invalid username or password");
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || 'Login failed');
+        return;
+      }
+
+      const data = await response.json();
+      // Lưu token vào localStorage
+      localStorage.setItem('token', data.token);
+      alert('Login successful!');
+      // Ví dụ: chuyển sang trang chính
+      window.location.href = '/dashboard';
+
+    } catch (err) {
+      console.error(err);
+      setError('Error connecting to server');
     }
   };
 
   return (
-    <div style={{ maxWidth: 300, margin: "50px auto", fontFamily: "Arial, sans-serif" }}>
+    <div>
       <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Username:</label><br />
+      <form onSubmit={handleLogin}>
+        <div>
+          <label>Email:</label>
           <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "100%", padding: 8 }}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Password:</label><br />
+
+        <div>
+          <label>Password:</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", padding: 8 }}
             required
           />
         </div>
-        <button type="submit" style={{ padding: "8px 12px" }}>Login</button>
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <button type="submit">Login</button>
       </form>
-      {message && <p style={{ marginTop: 12, color: message.includes("successful") ? "green" : "red" }}>{message}</p>}
     </div>
   );
 }
+
+export default LoginPage;

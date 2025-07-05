@@ -11,7 +11,7 @@ CREATE TABLE users (
     user_name VARCHAR(100) NOT NULL UNIQUE,
     mail VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    authority ENUM('owner', 'customer') NOT NULL,
+    role ENUM('owner', 'customer') NOT NULL,
     token VARCHAR(255),
     status ENUM('pending', 'active', 'deleted') NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

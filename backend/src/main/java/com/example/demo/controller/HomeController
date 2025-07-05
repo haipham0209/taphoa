@@ -1,9 +1,0 @@
-// @Controller
-// public class HomeController {
-
-//     @RequestMapping(value = "/{path:[^\\.]*}")
-//     public String redirect() {
-//         // Chuyển mọi route không có dấu chấm (không phải file static) về index.html
-//         return "forward:/index.html";
-//     }
-// }
