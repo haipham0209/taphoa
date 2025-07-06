@@ -20,14 +20,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByEmail(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepo.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("email not found" + email));
 
         return new org.springframework.security.core.userdetails.User(
-            user.getUserName(),
+            user.getEmail(),
             user.getPassword(),
-            List.of(new SimpleGrantedAuthority("ROLE_USER")) // hoặc lấy role từ DB
+            List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
         );
     }
 }
