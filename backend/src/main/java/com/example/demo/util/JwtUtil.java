@@ -29,7 +29,7 @@ public class JwtUtil {
 
     // Thời gian hết hạn token (1 giờ)
 //    private final long expirationMillis = 60 * 60 * 1000;
-    private final long expirationMillis = 30 * 1000; // 30 giây
+    private final long expirationMillis = 60 * 1000; // 30 giây
 
 
     // Tạo token từ username

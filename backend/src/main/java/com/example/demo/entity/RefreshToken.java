@@ -16,13 +16,14 @@ import jakarta.persistence.Table;
 public class RefreshToken {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String token;
 
     private Instant expiryDate;
 
+    //nhieu token cho 1 user
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,11 +39,11 @@ public class RefreshToken {
 	}
 
 	public Long getId() {
-		return Id;
+		return id;
 	}
 
 	public void setId(Long Id) {
-		this.Id = Id;
+		this.id = Id;
 	}
 
 	public String getToken() {
@@ -67,6 +68,9 @@ public class RefreshToken {
 
 	public void setRevoked(boolean revoked) {
 		this.revoked = revoked;
+	}
+	public boolean isExpired() {
+	    return expiryDate.isBefore(Instant.now());
 	}
 
     // Getters/setters

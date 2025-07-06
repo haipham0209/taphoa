@@ -24,45 +24,76 @@ import io.jsonwebtoken.Jwts;
 @Service
 public class AuthService {
 
-    @Autowired private AuthenticationManager authManager;
-    @Autowired private UserRepository userRepo;
-    @Autowired private JwtUtil jwtUtil;
+	@Autowired
+	private AuthenticationManager authManager;
+	@Autowired
+	private UserRepository userRepo;
+	@Autowired
+	private JwtUtil jwtUtil;
+	@Autowired
+	private RefreshTokenRepository refreshTokenRepository;
 
+//    register()
+//    refreshToken()	
+//    validateToken()
 
-    public LoginResponseDto login(LoginRequestDto request) {
-        // 1. Xác thực user
+	public LoginResponseDto login(LoginRequestDto request) {
+		// 1. Xác thực user
 //    	loadUserByUsername được gọi ngầm 
-        Authentication authentication = authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getEmail(), request.getPassword()
-            )
-            
-        );
-        
-        // 2. Lấy user từ DB
-        User user = userRepo.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+		Authentication authentication = authManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
 
-        // 3. Tạo access token
-        String accessToken = jwtUtil.generateAccessToken(user);
+				);
 
-        // 4. Tạo refresh token và lưu DB
-        String refreshToken = jwtUtil.generateRefreshToken(user);
+		// 2. Lấy user từ DB
+		User user = userRepo.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 5. Trả về DTO
-        return new LoginResponseDto(accessToken, refreshToken);
-    }
-    
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+		// 3. Tạo access token
+		String accessToken = jwtUtil.generateAccessToken(user);
 
-    public void logout(String refreshTokenStr) {
-        RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
-                .orElseThrow(() -> new RuntimeException("Refresh token not exist"));
+		// 4. Tạo refresh token và lưu DB
+		String refreshToken = jwtUtil.generateRefreshToken(user);
 
-        token.setRevoked(true); // Đánh dấu đã bị thu hồi
-        refreshTokenRepository.save(token);
-    }
+		// 5. Trả về DTO
+		return new LoginResponseDto(accessToken, refreshToken);
+	}
+
+	public void logout(String refreshTokenStr) {
+		RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
+				.orElseThrow(() -> new RuntimeException("Refresh token not exist"));
+
+		token.setRevoked(true); // Đánh dấu đã bị thu hồi
+		refreshTokenRepository.save(token);
+	}
+	
+	public String refreshAccessToken(String refreshToken) {
+	    // 1. Kiểm tra refresh token có trong DB
+	    RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+	        .orElseThrow(() -> new RuntimeException("Refresh token not valid"));
+
+	    // 2. Kiểm tra token đã bị thu hồi chưa
+	    if (storedToken.isRevoked()) {
+	        throw new RuntimeException("token is revoked");
+	    }
+
+	    // 3. Kiểm tra token còn hạn không
+	    if (storedToken.isExpired()) {
+//	        refreshTokenRepository.delete(storedToken); // tuỳ bạn muốn xoá hay giữ lại
+	        throw new RuntimeException("Refresh token is expired");
+	    }
+
+	    // 4. Lấy user từ token
+	    User user = storedToken.getUser(); // Dùng quan hệ @ManyToOne đã có
+
+	    if (user == null) {
+	        throw new RuntimeException("user not found");
+	    }
+
+	    // 5. Sinh access token mới
+	    String newAccessToken = jwtUtil.generateAccessToken(user);
+
+	    return newAccessToken;
+	}
 
 
 }

@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.demo.util.JwtUtil;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,19 +54,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("1");
+                System.out.println("1 JwtAuthenticationFilter");
             } else {
-                // Nếu token không hợp lệ (expired, sai thông tin), trả về 401
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
-                System.out.println("2");
                 return;
             }
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+            System.out.println("Token expired");
+            return;
         } catch (Exception e) {
-            // Trường hợp lỗi bất ngờ khi parse token
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
-            System.out.println("3");
+            System.out.println("Other error");
             return;
         }
+
 
         filterChain.doFilter(request, response);
     }
