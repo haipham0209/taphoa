@@ -51,8 +51,8 @@ public class JwtUtil {
         refreshRepo.save(token);
         return token.getToken();
     }
-    // Lấy username từ token
-    public String extractUsername(String token) {
+    // Lấy email từ token
+    public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
@@ -61,14 +61,14 @@ public class JwtUtil {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
-    // Validate token với UserDetails
+    // Validate AccessToken với UserDetails
     public boolean validateToken(String token, String expectedUsername) {
-        String actualUsername = extractUsername(token);
+        String actualUsername = extractEmail(token);
         return (actualUsername.equals(expectedUsername) && !isTokenExpired(token));
     }
 
     // Lấy claims từ token
-    private Claims extractClaims(String token) {
+    public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()

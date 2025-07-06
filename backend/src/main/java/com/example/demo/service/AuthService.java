@@ -52,6 +52,17 @@ public class AuthService {
         // 5. Trả về DTO
         return new LoginResponseDto(accessToken, refreshToken);
     }
+    
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
+    public void logout(String refreshTokenStr) {
+        RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
+                .orElseThrow(() -> new RuntimeException("Refresh token not exist"));
+
+        token.setRevoked(true); // Đánh dấu đã bị thu hồi
+        refreshTokenRepository.save(token);
+    }
 
 
 }

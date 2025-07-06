@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.dto.LogOutRequestDto;
 import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.service.AuthService;
@@ -24,6 +27,14 @@ public class AuthController {
         return ResponseEntity.ok(response);
 //        return ResponseEntity.ok().build();
 
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody LogOutRequestDto request) {
+        String refreshToken = request.getRefreshToken();
+
+        authService.logout(refreshToken);
+
+        return ResponseEntity.ok("Logout success");
     }
 
 //    @PostMapping("/login")
