@@ -28,7 +28,9 @@ public class JwtUtil {
     private final SecretKey secretKey = Keys.hmacShaKeyFor("taph0Aw1ThKiwithmailKeyOnCanhVinhInBinhDinhwitha".getBytes(StandardCharsets.UTF_8));
 
     // Thời gian hết hạn token (1 giờ)
-    private final long expirationMillis = 60 * 60 * 1000;
+//    private final long expirationMillis = 60 * 60 * 1000;
+    private final long expirationMillis = 30 * 1000; // 30 giây
+
 
     // Tạo token từ username
     public String generateAccessToken(User user) {

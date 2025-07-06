@@ -50,16 +50,10 @@ public class SecurityConfig {
 
         return http.build();
     }
-    // Cấu hình AuthenticationManager để xác thực username/password
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
-	@Autowired
-	private AuthenticationManagerBuilder authBuilder;
+//	@Autowired
+//	private AuthenticationManagerBuilder authBuilder;
 
 
-    // Cấu hình mã hóa mật khẩu
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -80,7 +74,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*")); // ✅ sửa lại dòng này
+        configuration.setAllowedOriginPatterns(List.of("*")); 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

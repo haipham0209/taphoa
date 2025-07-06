@@ -1,5 +1,6 @@
 package com.example.demo.controller.config;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.demo.util.JwtUtil;
 
-import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,41 +27,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
-            throws ServletException, IOException, java.io.IOException {
+            throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
 
+        // Không có Authorization header hoặc không bắt đầu bằng "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // Nếu không có token thì bỏ qua, để filter tiếp theo xử lý
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String token = authHeader.substring(7);
+        final String token = authHeader.substring(7); // Cắt "Bearer "
 
         try {
-            // Lấy email (username) từ token
             String email = jwtUtil.extractEmail(token);
 
-            // Kiểm tra token còn hiệu lực và chưa bị thu hồi
             if (email != null && jwtUtil.validateToken(token, email)) {
-
-                // Lấy role từ claim (nếu bạn lưu role trong token)
                 String role = jwtUtil.extractClaims(token).get("role", String.class);
 
-                // Tạo Authentication với role
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        email,
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-                );
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                email,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                        );
 
-                // Set Authentication vào SecurityContext
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("1");
+            } else {
+                // Nếu token không hợp lệ (expired, sai thông tin), trả về 401
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
+                System.out.println("2");
+                return;
             }
         } catch (Exception e) {
-            // Token không hợp lệ hoặc hết hạn, có thể ghi log hoặc xử lý tùy ý
-            // Không set Authentication -> truy cập sẽ bị chặn
+            // Trường hợp lỗi bất ngờ khi parse token
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+            System.out.println("3");
+            return;
         }
 
         filterChain.doFilter(request, response);
