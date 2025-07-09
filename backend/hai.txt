@@ -12,3 +12,11 @@ login
 bearer 
   "refresh_token" : "123"
   
+  register
+  {
+  "userName": "Nguyen Van A",
+  "email": "a@example.com",
+  "password": "123456"
+}
+
+  

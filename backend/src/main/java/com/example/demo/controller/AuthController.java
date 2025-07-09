@@ -11,7 +11,11 @@ import com.example.demo.dto.LogOutRequestDto;
 import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.dto.RefreshAccessTokenRequestDto;
+import com.example.demo.dto.RegisterRequestDto;
+import com.example.demo.dto.RegisterResponseDto;
 import com.example.demo.service.AuthService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
@@ -41,5 +45,12 @@ public class AuthController {
 	    String newAccessToken = authService.refreshAccessToken(refreshToken);
 	    return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
 	}
+	
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto request) {
+        RegisterResponseDto response = authService.register(request);
+        return ResponseEntity.ok(response);
+    }
 
 }
