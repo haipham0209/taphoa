@@ -14,9 +14,9 @@ import com.example.demo.exception.PendingUserException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
+
 	@ExceptionHandler(InternalAuthenticationServiceException.class)
-	
+
 	public ResponseEntity<ErrorResponseDto> handleInternalAuthException(InternalAuthenticationServiceException ex) {
 		Throwable cause = ex.getCause();
 
@@ -41,11 +41,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 	}
 
-	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
-		ErrorResponseDto error = new ErrorResponseDto("email or password not true", HttpStatus.UNAUTHORIZED.value());
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-	}
+//	@ExceptionHandler(BadCredentialsException.class)
+//	public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
+//		ErrorResponseDto error = new ErrorResponseDto(ex.getMessage(), HttpStatus.UNAUTHORIZED.value());
+//		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+//	}
 
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ErrorResponseDto> handleRuntimeException(RuntimeException ex) {
@@ -54,11 +54,22 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 	}
 
+	@ExceptionHandler(IllegalStateException.class)
+	public ResponseEntity<ErrorResponseDto> handleIllegalState(IllegalStateException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ErrorResponseDto(ex.getMessage(), HttpStatus.UNAUTHORIZED.value()));
+	}
+
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ErrorResponseDto("Email or password invalid", HttpStatus.UNAUTHORIZED.value()));
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
 		ex.printStackTrace();
-		ErrorResponseDto error = new ErrorResponseDto("System Error Unknow Error 1002",
-				HttpStatus.INTERNAL_SERVER_ERROR.value());
+		ErrorResponseDto error = new ErrorResponseDto("Unknow Error 1002", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
 	}
 }

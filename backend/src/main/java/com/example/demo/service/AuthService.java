@@ -66,32 +66,24 @@ public class AuthService {
 	}
 
 	public String refreshAccessToken(String refreshToken) {
-		// 1. Kiểm tra refresh token có trong DB
-		RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
-				.orElseThrow(() -> new RuntimeException("Refresh token not valid"));
+	    RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+	            .orElseThrow(() -> new IllegalArgumentException("Refresh token not valid"));
 
-		// 2. Kiểm tra token đã bị thu hồi chưa
-		if (storedToken.isRevoked()) {
-			throw new RuntimeException("token is revoked");
-		}
+	    if (storedToken.isRevoked()) {
+	        throw new IllegalStateException("Token is revoked");
+	    }
 
-		// 3. Kiểm tra token còn hạn không
-		if (storedToken.isExpired()) {
-//	        refreshTokenRepository.delete(storedToken); // tuỳ bạn muốn xoá hay giữ lại
-			throw new RuntimeException("Refresh token is expired");
-		}
+	    if (storedToken.isExpired()) {
+	        throw new IllegalStateException("Refresh token is expired");
+	    }
 
-		// 4. Lấy user từ token
-		User user = storedToken.getUser(); // Dùng quan hệ @ManyToOne đã có
+	    User user = storedToken.getUser();
+	    if (user == null) {
+	        throw new IllegalStateException("User not found");
+	    }
 
-		if (user == null) {
-			throw new RuntimeException("user not found");
-		}
-
-		// 5. Sinh access token mới
-		String newAccessToken = jwtUtil.generateAccessToken(user);
-
-		return newAccessToken;
+	    return jwtUtil.generateAccessToken(user);
 	}
+
 
 }

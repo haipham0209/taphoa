@@ -1,1 +1,14 @@
+
 $ cd D:\taphoathuavan/taphoa
+
+login
+ "email" : "ngan@example.com",
+  "password" : "123"
+  
+ logout
+   "refreshToken" : "ngan@example.com"
+   
+   refresh access token
+bearer 
+  "refresh_token" : "123"
+  

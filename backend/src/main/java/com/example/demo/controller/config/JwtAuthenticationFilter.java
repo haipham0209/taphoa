@@ -10,7 +10,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.demo.dto.ErrorResponseDto;
 import com.example.demo.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -21,55 +23,52 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+	@Autowired
+	private JwtUtil jwtUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+		final String authHeader = request.getHeader("Authorization");
 
-        // Không có Authorization header hoặc không bắt đầu bằng "Bearer "
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
 
-        final String token = authHeader.substring(7); // Cắt "Bearer "
+		final String token = authHeader.substring(7);
 
-        try {
-            String email = jwtUtil.extractEmail(token);
+		try {
+			String email = jwtUtil.extractEmail(token);
 
-            if (email != null && jwtUtil.validateToken(token, email)) {
-                String role = jwtUtil.extractClaims(token).get("role", String.class);
+			if (email != null && jwtUtil.validateToken(token, email)) {
+				String role = jwtUtil.extractClaims(token).get("role", String.class);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
-                        );
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(email,
+						null, List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase())));
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                System.out.println("1 JwtAuthenticationFilter");
-            } else {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
-                return;
-            }
-        } catch (ExpiredJwtException e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
-            System.out.println("Token expired");
-            return;
-        } catch (Exception e) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
-            System.out.println("Other error");
-            return;
-        }
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else {
+				sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired or invalid");
+				return;
+			}
+		} catch (ExpiredJwtException e) {
+			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired");
+			return;
+		} catch (Exception e) {
+			sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
+			return;
+		}
 
+		filterChain.doFilter(request, response);
+	}
 
-        filterChain.doFilter(request, response);
-    }
+	private void sendErrorResponse(HttpServletResponse response, int status, String message) throws IOException {
+		response.setStatus(status);
+		response.setContentType("application/json;charset=UTF-8");
+		ErrorResponseDto error = new ErrorResponseDto(message, status);
+		new ObjectMapper().writeValue(response.getWriter(), error);
+	}
+
 }
