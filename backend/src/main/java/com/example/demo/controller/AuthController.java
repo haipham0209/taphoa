@@ -28,13 +28,10 @@ public class AuthController {
 
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(@RequestBody LogOutRequestDto request) {
-		try {
-			authService.logout(request.getRefreshToken());
-			return ResponseEntity.ok("Logout success");
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
+	    authService.logout(request.getRefreshToken()); // nếu có lỗi, sẽ throw và được handler xử lý
+	    return ResponseEntity.ok("Logout success");
 	}
+
 
 	@PostMapping("/refresh-access-token")
 	public ResponseEntity<?> refreshAccessToken(@RequestBody LogOutRequestDto request) {

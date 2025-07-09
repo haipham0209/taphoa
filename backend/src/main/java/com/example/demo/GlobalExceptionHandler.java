@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,7 +14,9 @@ import com.example.demo.exception.PendingUserException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
 	@ExceptionHandler(InternalAuthenticationServiceException.class)
+	
 	public ResponseEntity<ErrorResponseDto> handleInternalAuthException(InternalAuthenticationServiceException ex) {
 		Throwable cause = ex.getCause();
 

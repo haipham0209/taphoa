@@ -55,9 +55,13 @@ public class AuthService {
 
 	public void logout(String refreshTokenStr) {
 		RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
-				.orElseThrow(() -> new RuntimeException("Refresh token not exist"));
-
-		token.setRevoked(true); // Đánh dấu đã bị thu hồi
+	            .orElseThrow(() -> new IllegalArgumentException("Refresh token not exist"));
+		
+//	    if (token.isRevoked()) {
+//	        throw new IllegalArgumentException("Refresh token đã bị thu hồi");
+//	    }
+	    
+		token.setRevoked(true);
 		refreshTokenRepository.save(token);
 	}
 
