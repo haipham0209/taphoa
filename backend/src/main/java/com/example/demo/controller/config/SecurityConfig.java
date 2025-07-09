@@ -48,7 +48,7 @@ public class SecurityConfig {
 							    "/public/**",
 							    "/docs/**"
 							)
-						.permitAll().anyRequest().authenticated())
+						.permitAll().requestMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated())
 					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();

@@ -7,14 +7,18 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.LoginRequestDto;
 import com.example.demo.dto.LoginResponseDto;
 import com.example.demo.entity.RefreshToken;
 import com.example.demo.entity.User;
+import com.example.demo.entity.User.Status;
 import com.example.demo.repository.RefreshTokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
@@ -33,28 +37,19 @@ public class AuthService {
 	@Autowired
 	private RefreshTokenRepository refreshTokenRepository;
 
-//    register()
-//    refreshToken()	
-//    validateToken()
-
 	public LoginResponseDto login(LoginRequestDto request) {
-		// 1. Xác thực user
-//    	loadUserByUsername được gọi ngầm 
+
+		// Xác thực đăng nhập
 		Authentication authentication = authManager
-				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+		// Nếu xác thực thành công, lấy user
+		User user = userRepo.findByEmail(request.getEmail())
+				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-				);
-
-		// 2. Lấy user từ DB
-		User user = userRepo.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
-
-		// 3. Tạo access token
+		// Tạo token
 		String accessToken = jwtUtil.generateAccessToken(user);
-
-		// 4. Tạo refresh token và lưu DB
 		String refreshToken = jwtUtil.generateRefreshToken(user);
 
-		// 5. Trả về DTO
 		return new LoginResponseDto(accessToken, refreshToken);
 	}
 
@@ -65,35 +60,34 @@ public class AuthService {
 		token.setRevoked(true); // Đánh dấu đã bị thu hồi
 		refreshTokenRepository.save(token);
 	}
-	
+
 	public String refreshAccessToken(String refreshToken) {
-	    // 1. Kiểm tra refresh token có trong DB
-	    RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
-	        .orElseThrow(() -> new RuntimeException("Refresh token not valid"));
+		// 1. Kiểm tra refresh token có trong DB
+		RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+				.orElseThrow(() -> new RuntimeException("Refresh token not valid"));
 
-	    // 2. Kiểm tra token đã bị thu hồi chưa
-	    if (storedToken.isRevoked()) {
-	        throw new RuntimeException("token is revoked");
-	    }
+		// 2. Kiểm tra token đã bị thu hồi chưa
+		if (storedToken.isRevoked()) {
+			throw new RuntimeException("token is revoked");
+		}
 
-	    // 3. Kiểm tra token còn hạn không
-	    if (storedToken.isExpired()) {
+		// 3. Kiểm tra token còn hạn không
+		if (storedToken.isExpired()) {
 //	        refreshTokenRepository.delete(storedToken); // tuỳ bạn muốn xoá hay giữ lại
-	        throw new RuntimeException("Refresh token is expired");
-	    }
+			throw new RuntimeException("Refresh token is expired");
+		}
 
-	    // 4. Lấy user từ token
-	    User user = storedToken.getUser(); // Dùng quan hệ @ManyToOne đã có
+		// 4. Lấy user từ token
+		User user = storedToken.getUser(); // Dùng quan hệ @ManyToOne đã có
 
-	    if (user == null) {
-	        throw new RuntimeException("user not found");
-	    }
+		if (user == null) {
+			throw new RuntimeException("user not found");
+		}
 
-	    // 5. Sinh access token mới
-	    String newAccessToken = jwtUtil.generateAccessToken(user);
+		// 5. Sinh access token mới
+		String newAccessToken = jwtUtil.generateAccessToken(user);
 
-	    return newAccessToken;
+		return newAccessToken;
 	}
-
 
 }

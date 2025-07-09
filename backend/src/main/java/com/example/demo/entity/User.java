@@ -1,74 +1,101 @@
 package com.example.demo.entity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
+import jakarta.persistence.*;
+import java.sql.Timestamp;
+
 @Entity
+@Table(name = "users")
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id")
 
-    private Long Id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer id;  // theo DB là INT nên dùng Integer (hoặc int)
 
-    public Long getId() {
-		return Id;
-	}
-
-	public void setId(Long id) {
-		Id = id;
-	}
-
-	private String password;
-
-    private String role;
-    
-    @Column(unique = true)
-    private String email;
-
-    private String token;
-
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false, unique = true, length = 100)
     private String userName;
 
-	public String getUserName() {
-		return userName;
-	}
+    @Column(nullable = false, unique = true, length = 255)
+    private String email;
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    @Column(nullable = false, length = 255)
+    private String password;
 
-	public String getPassword() {
-		return password;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Status status;
 
-	public String getToken() {
-		return token;
-	}
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    public enum Role {
+        ADMIN,
+        CUSTOMER
+    }
 
-	public String getRole() {
-		return role;
-	}
+    public enum Status {
+        PENDING,
+        ACTIVE,
+        DELETED
+    }
 
-	public void setRole(String role) {
-		this.role = role;
-	}
+    
+    // Getters and Setters
+    public Integer getId() {
+        return id;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+    
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+    
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+    
+    
 }
