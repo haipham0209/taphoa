@@ -39,14 +39,13 @@ public class AuthService {
 
 	public LoginResponseDto login(LoginRequestDto request) {
 
-		// Xác thực đăng nhập
 		Authentication authentication = authManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-		// Nếu xác thực thành công, lấy user
+		// success, get user information
 		User user = userRepo.findByEmail(request.getEmail())
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		// Tạo token
+		// generate token
 		String accessToken = jwtUtil.generateAccessToken(user);
 		String refreshToken = jwtUtil.generateRefreshToken(user);
 
