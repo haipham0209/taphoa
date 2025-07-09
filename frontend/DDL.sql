@@ -14,12 +14,10 @@ CREATE TABLE users (
     user_name VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'customer') NOT NULL,
-    status ENUM('pending', 'active', 'deleted') NOT NULL DEFAULT 'pending',
+    role ENUM('ADMIN', 'CUSTOMER') NOT NULL DEFAULT 'CUSTOMER',
+    status ENUM('PENDING', 'ACTIVE', 'DELETED') NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-ALTER TABLE users MODIFY role VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-ALTER TABLE users MODIFY status VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 
 -- Token xác thực
 CREATE TABLE refresh_tokens (
@@ -100,11 +98,38 @@ CREATE TABLE daily_revenue (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DELIMITER $$
+
+CREATE TRIGGER trg_users_role_uppercase_before_insert
+BEFORE INSERT ON users
+FOR EACH ROW
+BEGIN
+  SET NEW.role = UPPER(NEW.role);
+  SET NEW.status = UPPER(NEW.status);
+END $$
+
+CREATE TRIGGER trg_users_role_uppercase_before_update
+BEFORE UPDATE ON users
+FOR EACH ROW
+BEGIN
+  SET NEW.role = UPPER(NEW.role);
+  SET NEW.status = UPPER(NEW.status);
+END $$
+
+DELIMITER ;
+
+
 -- Tạo tài khoản admin
 INSERT INTO users (user_name, email, password, role, status)
-VALUES ('admin', 'admin@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'ACTIVE'),
+VALUES ('admin', 'admin@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'admin', 'ACTIVE'),
 ('hai', 'hai@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'PENDING'),
-('ngan', 'ngan@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'DELETED');
-UPDATE users SET role = UPPER(role);
+('ngan', 'ngan@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'deleted');
+
+INSERT INTO users (user_name, email, password, status)
+VALUES ('cus', 'cus@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ACTIVE');
+
+
+
+-- UPDATE users SET role = UPPER(role);
 
 
