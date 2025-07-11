@@ -10,7 +10,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Integer id;  // theo DB là INT nên dùng Integer (hoặc int)
+    private Integer id;  
 
     @Column(name = "user_name", nullable = false, unique = true, length = 100)
     private String userName;

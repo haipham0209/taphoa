@@ -2,8 +2,11 @@
 $ cd D:\taphoathuavan/taphoa
 
 login
- "email" : "ngan@example.com",
+{
+ "email" : "admin@example.com",
   "password" : "123"
+}
+
   
  logout
    "refreshToken" : "ngan@example.com"

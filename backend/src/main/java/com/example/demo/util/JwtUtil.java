@@ -24,18 +24,16 @@ import javax.crypto.SecretKey;
 public class JwtUtil {
     @Autowired private RefreshTokenRepository refreshRepo;
 
-    // Khóa bí mật để ký token – nên lưu ở nơi bảo mật
+    // Key
     private final SecretKey secretKey = Keys.hmacShaKeyFor("taph0Aw1ThKiwithmailKeyOnCanhVinhInBinhDinhwitha".getBytes(StandardCharsets.UTF_8));
 
-    // Thời gian hết hạn token (1 giờ)
-//    private final long expirationMillis = 60 * 60 * 1000;
-    private final long expirationMillis = 60 * 1000; // 30 giây
+    private final long expirationMillis = 60 * 15 * 1000; 
 
 
-    // Tạo token từ username
+    // 
     public String generateAccessToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getEmail()) // Chỉ 1 dòng duy nhất
+                .setSubject(user.getEmail()) 
                 .claim("role", user.getRole())
                 .claim("username", user.getUserName())
                 .setIssuedAt(new Date())
@@ -53,23 +51,23 @@ public class JwtUtil {
         refreshRepo.save(token);
         return token.getToken();
     }
-    // Lấy email từ token
+    // 
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 
-    // Kiểm tra token hết hạn chưa
+    // 
     public boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
-    // Validate AccessToken với UserDetails
+    // 
     public boolean validateToken(String token, String expectedUsername) {
         String actualUsername = extractEmail(token);
         return (actualUsername.equals(expectedUsername) && !isTokenExpired(token));
     }
 
-    // Lấy claims từ token
+    // 
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)

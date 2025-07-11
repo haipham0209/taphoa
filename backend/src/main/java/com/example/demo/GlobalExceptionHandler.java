@@ -2,7 +2,9 @@ package com.example.demo;
 
 import com.example.demo.dto.ErrorResponseDto;
 import com.example.demo.exception.DeletedUserException;
+import com.example.demo.exception.DuplicateResourceException;
 import com.example.demo.exception.PendingUserException;
+import com.example.demo.exception.ResourceNotFoundException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,29 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+	
+//	//Category
+//	@ExceptionHandler(ResourceNotFoundException.class)
+//	public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex) {
+//	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//	}
+//
+//	@ExceptionHandler(DuplicateResourceException.class)
+//	public ResponseEntity<?> handleDuplicateResource(DuplicateResourceException ex) {
+//	    return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+//	}
+//Category
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponseDto> handleResourceNotFound(ResourceNotFoundException ex) {
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	            .body(new ErrorResponseDto(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
+	}
+
+	@ExceptionHandler(DuplicateResourceException.class)
+	public ResponseEntity<ErrorResponseDto> handleDuplicateResource(DuplicateResourceException ex) {
+	    return ResponseEntity.status(HttpStatus.CONFLICT)
+	            .body(new ErrorResponseDto(ex.getMessage(), HttpStatus.CONFLICT.value()));
+	}
 
 	// Login
 	@ExceptionHandler(InternalAuthenticationServiceException.class)
