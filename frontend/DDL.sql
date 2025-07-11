@@ -26,7 +26,8 @@ CREATE TABLE refresh_tokens (
     token VARCHAR(255) NOT NULL UNIQUE,
     revoked TINYINT(1) NOT NULL DEFAULT 0,
     expiry_date DATETIME(6) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Danh mục sản phẩm
@@ -125,8 +126,8 @@ VALUES ('admin', 'admin@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIl
 ('hai', 'hai@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'PENDING'),
 ('ngan', 'ngan@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ADMIN', 'deleted');
 
-INSERT INTO users (user_name, email, password, status)
-VALUES ('cus', 'cus@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq', 'ACTIVE');
+INSERT INTO users (user_name, email, password)
+VALUES ('cus', 'cus@example.com', '$2a$10$ZoIo8.SG7cUMEARBdVcs4uibCJFFbMvIIlwyMEyVzpWamNqhJ78Wq');
 
 
 

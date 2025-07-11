@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 			errors.put(error.getField(), error.getDefaultMessage());
 		}
 
-		String errorMessage = errors.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue())
+		String errorMessage = errors.entrySet().stream().map(e -> e.getValue())
 				.reduce((m1, m2) -> m1 + "; " + m2).orElse("Validation error");
 
 		return badRequest(errorMessage);
@@ -60,15 +60,22 @@ public class GlobalExceptionHandler {
 	// insert dulpicate
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErrorResponseDto> handleDuplicate(DataIntegrityViolationException ex) {
-		String message = ex.getMessage();
+	    String message = ex.getMessage();
 
-		if (message.contains("users.email")) {
-			return badRequest("Email is existed");
-		} else if (message.contains("users.user_name")) {
-			return badRequest("user name is existed");
-		}
+	    if (message.contains("users.email")) {
+	        return conflict("Email is existed");
+	    } else if (message.contains("users.user_name")) {
+	        return conflict("Username is existed");
+	    }
 
-		return badRequest("System Error 1004");
+	    return conflict("System Error 1004");
+	}
+	
+	private ResponseEntity<ErrorResponseDto> conflict(String message) {
+	    ErrorResponseDto response = new ErrorResponseDto();
+	    response.setMessage(message);
+	    response.setStatus(409);  
+	    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	//
@@ -113,4 +120,5 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN)
 				.body(new ErrorResponseDto(message, HttpStatus.FORBIDDEN.value()));
 	}
+	
 }

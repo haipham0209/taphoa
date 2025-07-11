@@ -8,6 +8,9 @@ public class ErrorResponseDto {
         this.message = message;
         this.status = status;
     }
+    public ErrorResponseDto() {
+
+    }
 
     // Getters và setters
     public String getMessage() {

@@ -1,14 +1,7 @@
 package com.example.demo.service;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,10 +20,8 @@ import com.example.demo.repository.RefreshTokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
 
-import io.jsonwebtoken.Jwts;
-
 @Service
-public class AuthService {
+public class AccountService {
 
 	@Autowired
 	private AuthenticationManager authManager;
@@ -96,9 +87,9 @@ public class AuthService {
 
 	public RegisterResponseDto register(RegisterRequestDto request) {
 		// 1. Kiểm tra email đã tồn tại chưa
-		if (userRepository.existsByEmail(request.getEmail())) {
-			throw new IllegalArgumentException("Email is existed");
-		}
+//		if (userRepository.existsByEmail(request.getEmail())) {
+//			throw new IllegalArgumentException("Email is existed");
+//		}
 
 		// 2. Mã hóa mật khẩu
 		String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -108,12 +99,12 @@ public class AuthService {
 		user.setUserName(request.getUserName());
 		user.setEmail(request.getEmail());
 		user.setPassword(encodedPassword);
-		user.setRole(Role.CUSTOMER); // Mặc định luôn CUSTOMER
+		user.setRole(Role.CUSTOMER); // 
 		user.setStatus(Status.PENDING);
-		// 4. Lưu vào DB
+
 		userRepository.save(user);
 
-		return new RegisterResponseDto("Đăng ký thành công");
+		return new RegisterResponseDto("Account Registered");
 	}
 
 }
