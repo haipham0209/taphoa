@@ -46,7 +46,10 @@ public class Category {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
-
+    // Constructor nhận id
+    public Category(Long categoryId) {
+        this.categoryId = categoryId;
+    }
     // Constructor 
     public Category() {}
 

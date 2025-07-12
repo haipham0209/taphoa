@@ -14,7 +14,6 @@ import com.example.demo.dto.RefreshAccessTokenRequestDto;
 import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.RegisterResponseDto;
 import com.example.demo.service.AccountService;
-
 import jakarta.validation.Valid;
 
 @RestController

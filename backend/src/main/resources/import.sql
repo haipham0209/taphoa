@@ -27,7 +27,7 @@ CREATE TABLE refresh_tokens (
     revoked TINYINT(1) NOT NULL DEFAULT 0,
     expiry_date DATETIME(6) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Danh mục sản phẩm
@@ -36,35 +36,35 @@ CREATE TABLE category (
     category_name VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Sản phẩm
-CREATE TABLE product (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT NOT NULL,
-    product_name VARCHAR(255) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    cost_price DECIMAL(10,2) NOT NULL,
-    discounted_price DECIMAL(10,2),
-    description TEXT,
-    stock_quantity INT NOT NULL,
-    barcode VARCHAR(13) NOT NULL UNIQUE,
-    product_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
-);
-
--- Giảm giá
-CREATE TABLE discounts (
-    discount_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    discount_value DECIMAL(5,2) NOT NULL,
-    start_date DATETIME,
-    end_date DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
-);
+	
+	-- Sản phẩm
+	CREATE TABLE product (
+	    product_id INT AUTO_INCREMENT PRIMARY KEY,
+	    category_id INT NOT NULL,
+	    product_name VARCHAR(255) NOT NULL,
+	    price DECIMAL(10,2) NOT NULL,
+	    cost_price DECIMAL(10,2) NOT NULL,
+	    discounted_price DECIMAL(10,2),
+	    description TEXT,
+	    stock_quantity INT DEFAULT 0,
+	    barcode VARCHAR(13) NOT NULL UNIQUE,
+	    product_image VARCHAR(255),
+	    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	    FOREIGN KEY (category_id) REFERENCES category(category_id) ON DELETE CASCADE
+	);
+	
+	-- Giảm giá
+	CREATE TABLE discounts (
+	    discount_id INT AUTO_INCREMENT PRIMARY KEY,
+	    product_id INT NOT NULL,
+	    discount_value DECIMAL(5,2) NOT NULL,
+	    start_date DATETIME,
+	    end_date DATETIME,
+	    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	    FOREIGN KEY (product_id) REFERENCES product(product_id) ON DELETE CASCADE
+	);
 
 -- Đơn hàng
 CREATE TABLE orders (
