@@ -22,128 +22,87 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-//	//Category
-//	@ExceptionHandler(ResourceNotFoundException.class)
-//	public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex) {
-//	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-//	}
-//
-//	@ExceptionHandler(DuplicateResourceException.class)
-//	public ResponseEntity<?> handleDuplicateResource(DuplicateResourceException ex) {
-//	    return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-//	}
-//Category
-	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<ErrorResponseDto> handleResourceNotFound(ResourceNotFoundException ex) {
-	    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	            .body(new ErrorResponseDto(ex.getMessage(), HttpStatus.NOT_FOUND.value()));
-	}
 
-	@ExceptionHandler(DuplicateResourceException.class)
-	public ResponseEntity<ErrorResponseDto> handleDuplicateResource(DuplicateResourceException ex) {
-	    return ResponseEntity.status(HttpStatus.CONFLICT)
-	            .body(new ErrorResponseDto(ex.getMessage(), HttpStatus.CONFLICT.value()));
-	}
+    // ========== 404 NOT FOUND ==========
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceNotFound(ResourceNotFoundException ex) {
+        return error(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
 
-	// Login
-	@ExceptionHandler(InternalAuthenticationServiceException.class)
-	public ResponseEntity<ErrorResponseDto> handleInternalAuthException(InternalAuthenticationServiceException ex) {
-		Throwable cause = ex.getCause();
+    // ========== 409 CONFLICT ==========
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ErrorResponseDto> handleDuplicateResource(DuplicateResourceException ex) {
+        return error(HttpStatus.CONFLICT, ex.getMessage());
+    }
 
-		if (cause instanceof DeletedUserException) {
-			return forbidden("Account is deleted");
-		} else if (cause instanceof PendingUserException) {
-			return forbidden("Account is on pending");
-		} else if (cause instanceof DisabledException) {
-			return forbidden("Account is not activated");
-		}
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDatabaseConflict(DataIntegrityViolationException ex) {
+        String msg = ex.getMessage();
 
-		return unauthorized("System Error Unknow Error 1001");
-	}
+        if (msg.contains("users.email")) return error(HttpStatus.CONFLICT, "Email already exists");
+        if (msg.contains("users.user_name")) return error(HttpStatus.CONFLICT, "Username already exists");
 
-	// Wrong Login info
-	@ExceptionHandler(BadCredentialsException.class)
-	public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
-		return unauthorized("Email or password invalid");
-	}
+        return error(HttpStatus.CONFLICT, "Duplicate entry");
+    }
 
-	// Register Validate
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
-		Map<String, String> errors = new HashMap<>();
-		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-			errors.put(error.getField(), error.getDefaultMessage());
-		}
+    // ========== 400 BAD REQUEST ==========
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponseDto> handleValidation(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .reduce((a, b) -> a + "; " + b)
+                .orElse("Validation error");
 
-		String errorMessage = errors.entrySet().stream().map(e -> e.getValue())
-				.reduce((m1, m2) -> m1 + "; " + m2).orElse("Validation error");
+        return error(HttpStatus.BAD_REQUEST, message);
+    }
 
-		return badRequest(errorMessage);
-	}
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
+        return error(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 
-	// insert dulpicate
-	@ExceptionHandler(DataIntegrityViolationException.class)
-	public ResponseEntity<ErrorResponseDto> handleDuplicate(DataIntegrityViolationException ex) {
-	    String message = ex.getMessage();
+    // ========== 401 UNAUTHORIZED & 403 FORBIDDEN ==========
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadCredentials(BadCredentialsException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+    }
 
-	    if (message.contains("users.email")) {
-	        return conflict("Email is existed");
-	    } else if (message.contains("users.user_name")) {
-	        return conflict("Username is existed");
-	    }
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<ErrorResponseDto> handleInternalAuth(InternalAuthenticationServiceException ex) {
+        Throwable cause = ex.getCause();
 
-	    return conflict("System Error 1004");
-	}
-	
-	private ResponseEntity<ErrorResponseDto> conflict(String message) {
-	    ErrorResponseDto response = new ErrorResponseDto();
-	    response.setMessage(message);
-	    response.setStatus(409);  
-	    return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-	}
+        if (cause instanceof DeletedUserException)
+            return error(HttpStatus.FORBIDDEN, "Account is deleted");
+        if (cause instanceof PendingUserException)
+            return error(HttpStatus.FORBIDDEN, "Account is pending approval");
+        if (cause instanceof DisabledException)
+            return error(HttpStatus.FORBIDDEN, "Account is disabled");
 
-	//
-	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
-		return badRequest(ex.getMessage());
-	}
+        return error(HttpStatus.UNAUTHORIZED, "Authentication failed");
+    }
 
-	//
-	@ExceptionHandler(IllegalStateException.class)
-	public ResponseEntity<ErrorResponseDto> handleIllegalState(IllegalStateException ex) {
-		return unauthorized(ex.getMessage());
-	}
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDto> handleIllegalState(IllegalStateException ex) {
+        return error(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
 
-	//
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ErrorResponseDto> handleRuntimeException(RuntimeException ex) {
-		return badRequest("System Error 1003 " + ex.getMessage());
-	}
+    // ========== 500 INTERNAL SERVER ERROR ==========
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponseDto> handleRuntime(RuntimeException ex) {
+        ex.printStackTrace();
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error");
+    }
 
-	//
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
-		ex.printStackTrace();
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(new ErrorResponseDto("Unknow Error 1002", 500));
-	}
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
+        ex.printStackTrace();
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown system error");
+    }
 
-	// ===================== HELPERS ======================
-
-	private ResponseEntity<ErrorResponseDto> badRequest(String message) {
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-				.body(new ErrorResponseDto(message, HttpStatus.BAD_REQUEST.value()));
-	}
-
-	private ResponseEntity<ErrorResponseDto> unauthorized(String message) {
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-				.body(new ErrorResponseDto(message, HttpStatus.UNAUTHORIZED.value()));
-	}
-
-	private ResponseEntity<ErrorResponseDto> forbidden(String message) {
-		return ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body(new ErrorResponseDto(message, HttpStatus.FORBIDDEN.value()));
-	}
-	
+    // ======= COMMON METHOD FOR ERROR =========
+    private ResponseEntity<ErrorResponseDto> error(HttpStatus status, String message) {
+        return ResponseEntity.status(status)
+                .body(new ErrorResponseDto(message, status.value()));
+    }
 }
+
