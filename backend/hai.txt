@@ -1,6 +1,4 @@
-
-$ cd D:\taphoathuavan/taphoa
-
+cd D:\taphoathuavan/taphoa
 login
 {
  "email" : "admin@example.com",
