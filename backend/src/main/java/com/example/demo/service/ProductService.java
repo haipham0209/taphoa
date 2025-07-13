@@ -32,7 +32,7 @@ public class ProductService {
 	private static final int CATEGORY_PAGE_SIZE = 5;
 	private static final int PRODUCT_PAGE_SIZE = 10;
 
-	//page
+	//page with category
 	public List<CategoryGroupDto> getProductsGroupedByCategory(int page) {
 		Pageable categoryPageable = PageRequest.of(page, CATEGORY_PAGE_SIZE);
 		Page<Category> categoryPage = categoryRepository.findAll(categoryPageable);
