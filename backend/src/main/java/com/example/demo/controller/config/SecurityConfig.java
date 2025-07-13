@@ -32,21 +32,26 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers(
-							    "/api/login",
-							    "/api/register",
-							    "/api/refresh-access-token", 
-							    "/api/logout",
-							    "/public/**",
-							    "/docs/**"
-							)
-						.permitAll().requestMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated())
-					.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-		return http.build();
+	    http.csrf(csrf -> csrf.disable())
+	        .authorizeHttpRequests(auth -> auth
+	            .requestMatchers(
+	                "/api/login",
+	                "/api/register",
+	                "/api/refresh-access-token", 
+	                "/api/logout",
+	                "/api/products/**",
+	                "/public/**",
+	                "/docs/**"
+	            ).permitAll()
+	            .requestMatchers("/admin/**").hasRole("ADMIN")
+	            .anyRequest().authenticated() // để sau cùng
+	        )
+	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+	        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+	    return http.build();
 	}
+
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {

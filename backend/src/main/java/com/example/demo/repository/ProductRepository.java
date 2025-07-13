@@ -12,17 +12,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	
 	Page<Product> findByCategory_CategoryIdOrderByCreatedAtDesc(Long categoryId, Pageable pageable);
 
+    // Lấy tất cả product theo categoryId (ko phân trang)
+    List<Product> findByCategory_CategoryId(Long categoryId);
 
-    // Tìm top 10 sản phẩm theo category (dùng cho phân trang hiển thị)
-    List<Product> findTop10ByCategory_CategoryIdOrderByCreatedAtDesc(Integer categoryId);
+    // Tìm top 10 sản phẩm theo tên hoặc barcode (gợi ý tìm kiếm)
+    List<Product> findTop10ByProductNameContainingIgnoreCaseOrBarcodeContaining(String productName, String barcode);
+//    List<Product> findTop5ByProductNameContainingIgnoreCaseOrBarcodeContaining(String productName, String barcode);
 
-    // Tìm tất cả theo category (không giới hạn số lượng, dùng cho /category/{id})
-    List<Product> findByCategory_CategoryId(Integer categoryId);
+    // Tìm sản phẩm theo tên (search)
+//    List<Product> findByProductNameContainingIgnoreCase(String name);
+    List<Product> findTop25ByProductNameContainingIgnoreCase(String name);
+    
+    boolean existsByBarcode(String barcode);
 
-    // Tìm sản phẩm theo barcode hoặc tên gần giống (suggest)
-    List<Product> findByBarcodeContainingOrProductNameContainingIgnoreCase(String barcode, String productName);
+    boolean existsByProductNameAndCategory_CategoryId(String productName, Integer categoryId);
 
-    // Tìm theo tên chính xác hoặc gần đúng (search)
-    List<Product> findByProductNameContainingIgnoreCase(String name);
+
 }
 
