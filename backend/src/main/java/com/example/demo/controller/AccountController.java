@@ -15,6 +15,7 @@ import com.example.demo.dto.RegisterRequestDto;
 import com.example.demo.dto.RegisterResponseDto;
 import com.example.demo.service.AccountService;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -24,9 +25,9 @@ public class AccountController {
 	private AccountService authService;
 
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
-		LoginResponseDto response = authService.login(request);
-		return ResponseEntity.ok(response);
+	public ResponseEntity<?> login(@RequestBody LoginRequestDto request, HttpServletResponse response) {
+		LoginResponseDto loginResponse = authService.login(request, response);
+		return ResponseEntity.ok(loginResponse);
 	}
 
 	@PostMapping("/logout")

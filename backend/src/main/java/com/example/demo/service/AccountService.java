@@ -19,6 +19,8 @@ import com.example.demo.entity.User.Status;
 import com.example.demo.repository.RefreshTokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class AccountService {
@@ -32,19 +34,43 @@ public class AccountService {
 	@Autowired
 	private RefreshTokenRepository refreshTokenRepository;
 
-	public LoginResponseDto login(LoginRequestDto request) {
+//	public LoginResponseDto login(LoginRequestDto request) {
+//
+//		Authentication authentication = authManager
+//				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+//		// success, get user information
+//		User user = userRepo.findByEmail(request.getEmail())
+//				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+//
+//		// generate token
+//		String accessToken = jwtUtil.generateAccessToken(user);
+//		String refreshToken = jwtUtil.generateRefreshToken(user);
+//
+//		return new LoginResponseDto(accessToken, refreshToken);
+//	}
+
+	public LoginResponseDto login(LoginRequestDto request, HttpServletResponse response) {
 
 		Authentication authentication = authManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-		// success, get user information
+
 		User user = userRepo.findByEmail(request.getEmail())
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		// generate token
 		String accessToken = jwtUtil.generateAccessToken(user);
 		String refreshToken = jwtUtil.generateRefreshToken(user);
 
-		return new LoginResponseDto(accessToken, refreshToken);
+		// Set refresh token vào cookie HttpOnly
+		Cookie cookie = new Cookie("refreshToken", refreshToken);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(false); // true nếu dùng HTTPS, false nếu dev local
+		cookie.setPath("/api/auth/refresh"); // chỉ gửi khi gọi api refresh
+		cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+
+		response.addCookie(cookie);
+
+		// Trả về access token (không trả refresh token trong body nữa)
+		return new LoginResponseDto(accessToken, null); // hoặc sửa dto chỉ có accessToken
 	}
 
 	public void logout(String refreshTokenStr) {
@@ -99,7 +125,7 @@ public class AccountService {
 		user.setUserName(request.getUserName());
 		user.setEmail(request.getEmail());
 		user.setPassword(encodedPassword);
-		user.setRole(Role.CUSTOMER); // 
+		user.setRole(Role.CUSTOMER); //
 		user.setStatus(Status.PENDING);
 
 		userRepository.save(user);

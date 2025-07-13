@@ -48,6 +48,7 @@ public class SecurityConfig {
 	        )
 	        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+	    http.cors();  // bật CORS
 
 	    return http.build();
 	}
