@@ -14,7 +14,7 @@ function App() {
     <BrowserRouter>
       <div className="d-flex flex-column min-vh-100">
         <Header />
-        <main className="flex-grow-1">
+        <main className="flex-grow-1" style={{ marginTop: '100px' }}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

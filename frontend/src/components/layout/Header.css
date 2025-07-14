@@ -1,0 +1,49 @@
+/* Thay đổi chiều cao navbar */
+
+/* Canh logo và brand */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+  line-height: 80px;
+  color: white !important;
+}
+
+/* Canh nút menu (hamburger) cho đẹp */
+.navbar-toggler {
+  margin-top: 20px;
+}
+
+/* Style cho các link nav */
+.navbar-nav .nav-link {
+  color: white !important;
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: 0 1rem;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffd700 !important; /* ví dụ vàng khi hover */
+}
+
+/* Ẩn hiện navbar khi scroll (cần toggle class .navbar-hidden) */
+.navbar-hidden {
+  top: -80px !important;
+  transition: top 0.3s ease-in-out;
+}
+
+/* Cố định navbar trên cùng */
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 9999;
+  transition: top 0.3s ease-in-out;
+}
+#haicontainer{
+  background-color: #215259;
+}
+
+/* Ghi đè màu nền header */
+.navbar {
+  background-color: #c8cccd !important; /* Màu bạn muốn */
+}
