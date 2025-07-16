@@ -36,7 +36,7 @@ const RegisterForm = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="User Name"
+                  placeholder="Name"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                   required
