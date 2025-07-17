@@ -5,23 +5,10 @@ import { NavLink } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3 d-none d-sm-block">
       <div className="container">
         {/* Logo */}
         <Link className="navbar-brand fs-4" to="/home">MyApp</Link>
-
-        {/* Nút toggle cho mobile */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavAlt"
-          aria-controls="navbarNavAlt"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
 
         {/* Menu + search: gập được khi mobile */}
         <div className="collapse navbar-collapse justify-content-end" id="navbarNavAlt">
@@ -45,6 +32,9 @@ const Header = () => {
                 <NavLink className="nav-link" to="/admin/dashboard">My Page</NavLink>
               </li>
             </ul>
+            <button class="btn btn-outline-secondary d-flex align-items-center gap-2" aria-haspopup="true" aria-expanded="false">
+              <span class="me-1">🔍</span>
+            </button>
 
 
             {/* Search */}
@@ -58,6 +48,9 @@ const Header = () => {
               />
             </form> */}
           </div>
+        </div>
+        <div>
+
         </div>
       </div>
     </nav>

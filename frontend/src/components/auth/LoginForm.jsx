@@ -27,7 +27,7 @@ const LoginForm = () => {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-5">
-          <div className="card p-4 shadow">
+          <div className="p-4 shadow w-100 max-w-[70vw] mx-auto">
             <h2 className="text-center mb-4">Login</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
