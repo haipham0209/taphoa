@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import './HeaderMobile.css';
 
-const Header = () => {
+const HeaderMobile = () => {
   useEffect(() => {
     const toggler = document.querySelector(".custom-toggler");
     const menuIcon = toggler?.querySelector(".menu-icon");
@@ -46,9 +46,9 @@ const Header = () => {
 
 
           {/* Logo */}
-          <a className="navbar-brand ms-2" href="./main2.php?sname=FASHION+STORE">
+          <a className="navbar-brand ms-2" href="/home">
             <img
-              src="./Manager/uploads/logos/1737093381_wrb (2).png"
+              src="../public/logo192.png"
               alt="logo"
               style={{ height: "40px" }}
             />
@@ -84,42 +84,54 @@ const Header = () => {
         <div className="offcanvas-body">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link" href="./main2.php?sname=FASHION+STORE">ホームページ</a>
+              <a className="nav-link" href="/home">Home</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="./storeInfor3.php?sname=FASHION+STORE">お店について</a>
+              <a className="nav-link" href="/product">Product</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="./myPage2.php?sname=FASHION+STORE">マイページ</a>
+              <a className="nav-link" href="/home">ホームページ</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="/about-us">About Us</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="">My Page</a>
             </li>
 
-            <li className="nav-item mt-3 fw-bold">サポート</li>
-            <li className="nav-item">
+            <li className="nav-item mt-3 fw-bold custom-support">Support</li>
+            <li className="nav">
               <i className="fa fa-phone me-2"></i>
-              <a className="nav-link d-inline" href="tel:08012345678">08012345678</a>
+              <a className="nav-link custom-support-inline" href="tel:08012345678">08012345678</a>
             </li>
-            <li className="nav-item">
+            <li className="nav">
               <i className="fa fa-envelope me-2"></i>
-              <a className="nav-link d-inline" href="mailto:2230291@ecc.ac.jp">2230291@ecc.ac.jp</a>
+              <a className="nav-link custom-support-inline" href="mailto:2230291@ecc.ac.jp">2230291@ecc.ac.jp</a>
             </li>
-            <li className="nav-item">
+            <li className="nav">
               <i className="fa fa-map-marker me-2"></i>
-              <a className="nav-link d-inline" target="_blank" href="#">大阪市中崎町１－３－２５</a>
+              <a className="nav-link custom-support-inline" target="_blank" href="#">Canh Vinh Van Canh Binh Dinh</a>
             </li>
+            <Link
+              to="/login"
+              className="btn btn-success"
+              onClick={() => {
+                const offcanvas = document.getElementById('mobileMenu');
+                if (offcanvas && offcanvas.classList.contains('show')) {
+                  const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvas);
+                  bsOffcanvas?.hide();
+                }
+              }}
+            >
+              Login
+            </Link>
+
+
           </ul>
 
           {/* Search */}
           <div className="mt-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="商品を検索"
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  console.log("Search:", e.target.value);
-                }
-              }}
-            />
+
           </div>
         </div>
       </div>
@@ -127,4 +139,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderMobile;

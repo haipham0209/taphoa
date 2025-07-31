@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/authService';
 import { getUserRole } from '../../utils/jwtUtils';
+import '../css/Login.css';
 
 const LoginForm = () => {
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,18 +21,39 @@ const LoginForm = () => {
       if (role === 'ADMIN') navigate('/admin/dashboard');
       else navigate('/home');
     } catch (err) {
-      alert('Login failed');
+      // let message = err.response.message;
+       let message = 'Login failed';
+
+      if (err.response) {
+        const status = err.response.status;
+
+        if (status === 401) {
+          message = 'Email or password invalid';
+
+        } else if (status === 403) {
+          message = 'Your account is currently not available. Please contact the administrator for more information.';
+        } else if (status >= 500) {
+          message = 'System error, please contact the owner';
+        }
+      } else {
+        message = 'Can not connect to the server';
+      }
+
+      setError(message);
     }
+
   };
 
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-5">
-          <div className="p-4 shadow w-100 max-w-[70vw] mx-auto">
+          <div className="card p-4 shadow custom-width mx-auto">
             <h2 className="text-center mb-4">Login</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
+                {error && <p className="text-danger">{error}</p>}
+
                 <input
                   type="email"
                   className="form-control"

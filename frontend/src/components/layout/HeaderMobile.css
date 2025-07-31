@@ -65,5 +65,47 @@
     will-change: transform;
 }
 
+.offcanvas-body {
+color: black;
+}
+
+.navbar-nav .nav-link {
+  color: black !important;
+  /* font-weight: 500;
+  font-size: 1.6rem;
+  font-weight: bold; */
+  padding: 0 1rem;
+  margin-right: 30px;
+}
 
 
+
+/* Cố định navbar trên cùng */
+.navbar {
+  position: fixed;
+  top: 0;
+  height: 100px;
+  padding-top: 30px;
+  width: 100%;
+  z-index: 9999;
+  transition: top 0.3s ease-in-out;
+}
+#haicontainer{
+  background-color: #215259;
+}
+
+/* Ghi đè màu nền header */
+.navbar {
+  background-color: #c8cccd !important; /* Màu bạn muốn */
+}
+.nav-link{
+  margin-top: 25px;
+  font-size: 20px;
+}
+.custom-support{
+  border-bottom: 1px solid black;
+}
+.custom-support-inline{
+  font-size: 18px;
+  margin-top: 8px !important;
+}

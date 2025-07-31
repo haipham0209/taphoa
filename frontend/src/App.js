@@ -14,7 +14,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="d-flex flex-column min-vh-100">
-        <Header />
+        {/* <Header /> */}
         <HeaderMobile />
         <main className="flex-grow-1" style={{ marginTop: '100px' }}>
           <Routes>

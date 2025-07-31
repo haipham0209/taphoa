@@ -58,16 +58,20 @@ public class AccountService {
 				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 		String accessToken = jwtUtil.generateAccessToken(user);
-		String refreshToken = jwtUtil.generateRefreshToken(user);
 
-		// Set refresh token vào cookie HttpOnly
-		Cookie cookie = new Cookie("refreshToken", refreshToken);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(false); // true nếu dùng HTTPS, false nếu dev local
-		cookie.setPath("/api/auth/refresh"); // chỉ gửi khi gọi api refresh
-		cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
 
-		response.addCookie(cookie);
+		if(request.isRemember()) {
+			String refreshToken = jwtUtil.generateRefreshToken(user);
+			// Set refresh token vào cookie HttpOnly
+			Cookie cookie = new Cookie("refreshToken", refreshToken);
+			cookie.setHttpOnly(true);
+			cookie.setSecure(false); // true nếu dùng HTTPS, false nếu dev local
+			cookie.setPath("/api/auth/refresh"); // chỉ gửi khi gọi api refresh
+			cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+
+			response.addCookie(cookie);
+		}
+
 
 		// Trả về access token (không trả refresh token trong body nữa)
 		return new LoginResponseDto(accessToken, null); // hoặc sửa dto chỉ có accessToken

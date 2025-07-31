@@ -3,6 +3,7 @@ public class LoginRequestDto {
 
     private String email;
     private String password;
+    private boolean remember;
 
     // Constructor, getter, setter
     public LoginRequestDto() {
@@ -23,4 +24,12 @@ public class LoginRequestDto {
     public void setPassword(String password) {
         this.password = password;
     }
+
+	public boolean isRemember() {
+		return remember;
+	}
+
+	public void setRemember(boolean remember) {
+		this.remember = remember;
+	}
 }
