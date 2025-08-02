@@ -51,31 +51,33 @@ public class AccountService {
 
 	public LoginResponseDto login(LoginRequestDto request, HttpServletResponse response) {
 
-		Authentication authentication = authManager
-				.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+	    Authentication authentication = authManager
+	            .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-		User user = userRepo.findByEmail(request.getEmail())
-				.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+	    User user = userRepo.findByEmail(request.getEmail())
+	            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-		String accessToken = jwtUtil.generateAccessToken(user);
+	    String accessToken = jwtUtil.generateAccessToken(user);
 
+	    // Tạo và lưu refresh token vào DB
+	    String refreshToken = jwtUtil.generateRefreshToken(user);
 
-		if(request.isRemember()) {
-			String refreshToken = jwtUtil.generateRefreshToken(user);
-			// Set refresh token vào cookie HttpOnly
-			Cookie cookie = new Cookie("refreshToken", refreshToken);
-			cookie.setHttpOnly(true);
-			cookie.setSecure(false); // true nếu dùng HTTPS, false nếu dev local
-			cookie.setPath("/api/auth/refresh"); // chỉ gửi khi gọi api refresh
-			cookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
+	    Cookie cookie = new Cookie("refreshToken", refreshToken);
+	    cookie.setHttpOnly(true);
+	    cookie.setSecure(false); // true nếu dùng HTTPS, false dev local
+	    cookie.setPath("/");
 
-			response.addCookie(cookie);
-		}
+	    if (request.isRemember()) {
+	        // Nếu remember, set thời gian cookie dài 7 ngày
+	        cookie.setMaxAge(7 * 24 * 60 * 60);
+	    }
+	    // Nếu không remember, không set maxAge => cookie phiên (mất khi đóng trình duyệt)
 
+	    response.addCookie(cookie);
 
-		// Trả về access token (không trả refresh token trong body nữa)
-		return new LoginResponseDto(accessToken, null); // hoặc sửa dto chỉ có accessToken
+	    return new LoginResponseDto(accessToken, null);
 	}
+
 
 	public void logout(String refreshTokenStr) {
 		RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
@@ -90,6 +92,7 @@ public class AccountService {
 	}
 
 	public String refreshAccessToken(String refreshToken) {
+//		System.out.println("toi day");
 		RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
 				.orElseThrow(() -> new IllegalArgumentException("Refresh token not valid"));
 

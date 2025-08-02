@@ -1,21 +1,48 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { getUserRole } from '../../utils/jwtUtils';
+import { getUserRole, isTokenExpired } from '../../utils/jwtUtils';
+// import axios from '../../services/axiosInstance'; // hoặc đường dẫn đúng
+import { refreshAccessToken } from '../../services/authService';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  const role = getUserRole(); // hàm lấy role user từ token
+  const [loading, setLoading] = React.useState(true);
+  const [authorized, setAuthorized] = React.useState(false);
 
-  if (!role) {
-    // Chưa đăng nhập, chuyển về login
-    return <Navigate to="/login" replace />;
-  }
+  React.useEffect(() => {
+    async function checkAuth() {
+      let token = localStorage.getItem('accessToken');
 
-  if (requiredRole && role !== requiredRole) {
-    // Không đúng role, có thể redirect về trang khác hoặc báo lỗi
-    return <Navigate to="/unauthorized" replace />;
-  }
+      // Nếu không có hoặc hết hạn
+      if (!token || isTokenExpired(token)) {
+        try {
+          // Gọi API refresh-access-token để lấy token mới
+          const newToken = await refreshAccessToken();
+          token = newToken;
+        } catch (err) {
+          // Refresh thất bại => logout hoặc navigate
+          setAuthorized(false);
+          setLoading(false);
+          return;
+        }
+      }
 
-  // Đủ quyền, render component
+      // Kiểm tra quyền
+      const role = getUserRole();
+      if (requiredRole && role !== requiredRole) {
+        setAuthorized(false);
+        setLoading(false);
+        return;
+      }
+
+      setAuthorized(true);
+      setLoading(false);
+    }
+
+    checkAuth();
+  }, [requiredRole]);
+
+  if (loading) return <div>Loading...</div>;
+  // if (!authorized) return <Navigate to="/login" replace />;
   return children;
 };
 

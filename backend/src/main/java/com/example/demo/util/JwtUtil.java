@@ -27,7 +27,9 @@ public class JwtUtil {
     // Key
     private final SecretKey secretKey = Keys.hmacShaKeyFor("taph0Aw1ThKiwithmailKeyOnCanhVinhInBinhDinhwitha".getBytes(StandardCharsets.UTF_8));
 
-    private final long expirationMillis = 60 * 15 * 1000; 
+//    private final long expirationMillis = 60 * 15 * 1000; 
+    private final long expirationMillis = 15 * 1000; //  giây
+
 
 
     // 
@@ -41,12 +43,13 @@ public class JwtUtil {
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+    
 
     public String generateRefreshToken(User user) {
         RefreshToken token = new RefreshToken();
         token.setToken(UUID.randomUUID().toString());
         token.setUser(user);
-        token.setExpiryDate(Instant.now().plus(7, ChronoUnit.DAYS));
+        token.setExpiryDate(Instant.now().plus(1, ChronoUnit.DAYS));
         token.setRevoked(false);
         refreshRepo.save(token);
         return token.getToken();

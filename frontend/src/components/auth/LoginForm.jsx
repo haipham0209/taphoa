@@ -17,18 +17,25 @@ const LoginForm = () => {
       // Gửi thêm remember nếu cần backend xử lý
       await login(email, password, remember);
 
-      const role = getUserRole();
-      if (role === 'ADMIN') navigate('/admin/dashboard');
+      //Đăng nhập thành công thì set isLoggedIn
+
+      localStorage.setItem('isLoggedIn', 'true');
+
+      const role = getUserRole(); // giả sử bạn có hàm này
+      if (role === 'ADMIN') navigate('/admin/home');
       else navigate('/home');
-    } catch (err) {
+    } catch (err) { 
+      
       // let message = err.response.message;
-       let message = 'Login failed';
+      let message = 'Login failed';
 
       if (err.response) {
         const status = err.response.status;
 
         if (status === 401) {
           message = 'Email or password invalid';
+
+
 
         } else if (status === 403) {
           message = 'Your account is currently not available. Please contact the administrator for more information.';

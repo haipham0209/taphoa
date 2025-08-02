@@ -5,6 +5,9 @@ login
   "password" : "123"
 }
 
+taph0Aw1ThKiwithmailKeyOnCanhVinhInBinhDinhwitha
+
+update users set status = "active" where email="admin@example.comhai2";
   
  logout
    "refreshToken" : "ngan@example.com"
