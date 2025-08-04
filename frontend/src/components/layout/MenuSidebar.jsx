@@ -58,7 +58,7 @@ export default function AdminMenu() {
   };
 
   const location = useLocation();
-const currentPath = location.pathname;
+  const currentPath = location.pathname;
 
 
 
@@ -67,7 +67,7 @@ const currentPath = location.pathname;
 
 
   return (
-    
+
     // <div className="w-64 h-screen bg-white shadow-lg p-4 flex flex-col custom-home-menu">
     <div className="w-64 h-full flex flex-col bg-white shadow-lg p-4 custom-home-menu">
 
@@ -89,7 +89,7 @@ const currentPath = location.pathname;
                 {item.subItems ? (
                   <>
                     <div
-                      className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${expandedMenus[item.label] || hasActiveSub ? 'active' : ''
+                      className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${hasActiveSub ? 'active' : ''
                         }`}
                       onClick={() => toggleExpand(item.label)}
                       role="menuitem"
@@ -103,13 +103,14 @@ const currentPath = location.pathname;
                         <span className="custom-label">{item.label}</span>
                       </div>
                       <div className="ml-3">
-                        {expandedMenus[item.label] || hasActiveSub ? (
+                        {expandedMenus[item.label] ? (
                           <ChevronUp size={16} />
                         ) : (
                           <ChevronDown size={16} />
                         )}
                       </div>
                     </div>
+
 
                     {(expandedMenus[item.label] || hasActiveSub) && (
                       <ul className="custom-sub-ul ml-6 mt-1 sub-list-none">

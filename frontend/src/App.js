@@ -8,14 +8,14 @@ import LoginPage from './pages/LoginPage';
 import Unauthorized from './pages/Unauthorized';
 import RegisterPage from './pages/RegisterPage';
 import AdminHomePage from './pages/admin/AdminHomePage';
-import AdminProductList from './pages/admin/ProductList';
+import AdminProductList from './pages/admin/AdminProductList';
 import CustomerHomePage from './pages/CustomerHomePage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Navigate } from 'react-router-dom';
 import { isTokenExpired } from './utils/jwtUtils';  // hoặc nơi bạn để hàm này
 import { refreshAccessToken } from './services/authService';
 import MenuSidebar from './components/layout/MenuSidebar'
-
+import AdminCustomersManager from './pages/admin/AdminCustomersManager';
 function AppWrapper() {
   // Vì useNavigate phải dùng trong BrowserRouter
   return (
@@ -82,6 +82,7 @@ function App() {
             }
           >
             <Route path="/admin/home" element={<AdminHomePage />} />
+            <Route path="/admin/users" element={<AdminCustomersManager />} />
             <Route path="/admin/products" element={<AdminProductList />} />
             {/* có thể thêm các route con khác nếu cần */}
           </Route>
