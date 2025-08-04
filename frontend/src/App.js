@@ -81,8 +81,8 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="home" element={<AdminHomePage />} />
-            <Route path="products" element={<AdminProductList />} />
+            <Route path="/admin/home" element={<AdminHomePage />} />
+            <Route path="/admin/products" element={<AdminProductList />} />
             {/* có thể thêm các route con khác nếu cần */}
           </Route>
         </Routes>

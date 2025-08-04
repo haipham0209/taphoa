@@ -74,14 +74,20 @@ ul {
   transition: background-color 0.3s, color 0.3s;
 }
 
+.custom-collapse-button.active {
+  background-color: white;
+  color: black;
+}
 
-
-
-
+.custom-collapse-button.active svg {
+  color: black;
+}
 
 /* Hover cho collapse-button riêng */
 .custom-collapse-button {
   transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+  cursor: pointer; /* 👈 CHÍNH NÓ */
 }
 .custom-collapse-button:hover {
   background-color: white;
@@ -95,6 +101,7 @@ ul {
 .custom-sub-li {
   color: aliceblue;
   transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer; /* 👈 CHÍNH NÓ */
 }
 .custom-sub-li:hover {
   background-color: #f0f0f0;

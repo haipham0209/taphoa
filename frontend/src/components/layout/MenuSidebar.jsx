@@ -5,28 +5,30 @@ import {
   Users,
   Settings,
   LogOut,
-  Box,
+  Boxes,
   ChevronDown,
   ChevronUp,
   TrendingUp,
-  Tag
+  Tag,
+  Box
 } from 'lucide-react';
 import { logout } from '../../services/authService';
 import './menu-side-bar.css';
 
 const menuItems = [
-  { label: 'Home', icon: <LayoutDashboard size={20} />, to: '/admin/home' },
-  { label: 'Custommers', icon: <Users size={20} />, to: '/admin/users' },
+  { label: 'Home', icon: <LayoutDashboard size={25} />, to: '/admin/home' },
+  { label: 'Custommers', icon: <Users size={25} />, to: '/admin/users' },
   {
     label: 'Products',
-    icon: <Box size={20} />,
+    icon: <Box size={25} />,
     subItems: [
-      { label: 'Sales', icon: <Tag size={20} />, to: '/admin/products/sales' },
-      { label: 'On Trend', icon: <TrendingUp size={20} />, to: '/admin/products/trending' },
+      { label: 'All Products', icon: <Boxes size={25} />, to: '/admin/products' },
+      { label: 'Sales', icon: <Tag size={25} />, to: '/admin/products/sales' },
+      { label: 'On Trend', icon: <TrendingUp size={25} />, to: '/admin/products/trending' },
     ],
   },
-  { label: 'System setting', icon: <Settings size={20} />, to: '/admin/settings' },
-  { label: 'Log Out', icon: <LogOut size={20} />, action: 'logout' },
+  { label: 'System setting', icon: <Settings size={25} />, to: '/admin/settings' },
+  { label: 'Log Out', icon: <LogOut size={25} />, action: 'logout' },
 ];
 
 export default function AdminMenu() {
@@ -72,14 +74,16 @@ export default function AdminMenu() {
               {item.subItems ? (
                 <>
                   <div
-                    className="custom-collapse-button flex items-center justify-between cursor-pointer hover:text-blue-600 px-4 py-2 rounded transition w-full"
+                    className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${expandedMenus[item.label] ? 'active' : ''
+                      }`}
                     onClick={() => toggleExpand(item.label)}
-                    role="button"
+                    role="menuitem"
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') toggleExpand(item.label);
                     }}
                   >
+
                     <div className="flex items-center gap-2">
                       {item.icon}
                       <span className="custom-label">{item.label}</span>
@@ -109,13 +113,13 @@ export default function AdminMenu() {
 
 
               ) : item.to ? (
-<Link
-  to={item.to}
-  className="custom-collapse-button flex items-center space-x-2 p-2 rounded transition px-4 hover:bg-white hover:text-black"
->
-  {item.icon}
-  <span className="custom-label">{item.label}</span>
-</Link>
+                <Link
+                  to={item.to}
+                  className="custom-collapse-button flex items-center space-x-2 p-2 rounded transition px-4 hover:bg-white hover:text-black"
+                >
+                  {item.icon}
+                  <span className="custom-label">{item.label}</span>
+                </Link>
 
               ) : (
                 <button
