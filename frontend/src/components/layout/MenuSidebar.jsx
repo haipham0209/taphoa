@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+
 import {
   LayoutDashboard,
   Users,
@@ -55,12 +57,17 @@ export default function AdminMenu() {
     navigate('/login');
   };
 
+  const location = useLocation();
+const currentPath = location.pathname;
+
+
 
   const logoutItem = menuItems.find(item => item.action === 'logout');
   const menuItemsWithoutLogout = menuItems.filter(item => item.action !== 'logout');
 
 
   return (
+    
     // <div className="w-64 h-screen bg-white shadow-lg p-4 flex flex-col custom-home-menu">
     <div className="w-64 h-full flex flex-col bg-white shadow-lg p-4 custom-home-menu">
 
@@ -69,69 +76,87 @@ export default function AdminMenu() {
         {/* <h2 className="text-xl font-semibold">Menu</h2> */}
         <div><a href="">Menu</a></div>
         <ul className="list-none hover:bg-white transition-colors duration-200">
-          {menuItemsWithoutLogout.map((item) => (
-            <li key={item.label}>
-              {item.subItems ? (
-                <>
-                  <div
-                    className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${expandedMenus[item.label] ? 'active' : ''
+          {menuItemsWithoutLogout.map((item) => {
+            const isActiveParent =
+              item.to && currentPath.startsWith(item.to) && !item.subItems;
+
+            const hasActiveSub =
+              item.subItems &&
+              item.subItems.some((sub) => currentPath.startsWith(sub.to));
+
+            return (
+              <li key={item.label}>
+                {item.subItems ? (
+                  <>
+                    <div
+                      className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${expandedMenus[item.label] || hasActiveSub ? 'active' : ''
+                        }`}
+                      onClick={() => toggleExpand(item.label)}
+                      role="menuitem"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') toggleExpand(item.label);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {item.icon}
+                        <span className="custom-label">{item.label}</span>
+                      </div>
+                      <div className="ml-3">
+                        {expandedMenus[item.label] || hasActiveSub ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </div>
+
+                    {(expandedMenus[item.label] || hasActiveSub) && (
+                      <ul className="custom-sub-ul ml-6 mt-1 sub-list-none">
+                        {item.subItems.map((sub) => {
+                          const isActiveSub = currentPath === sub.to;
+                          return (
+                            <li
+                              className={`custom-sub-li ${isActiveSub ? 'active' : ''
+                                }`}
+                              key={sub.label}
+                            >
+                              <Link
+                                to={sub.to}
+                                className={`flex items-center gap-2 px-2 py-1 hover:bg-gray-200 ${isActiveSub ? '' : ''
+                                  }`}
+                              >
+                                {sub.icon}
+                                <span className="custom-label">{sub.label}</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </>
+                ) : item.to ? (
+                  <Link
+                    to={item.to}
+                    className={`custom-collapse-button flex items-center space-x-2 p-2 transition px-4 hover:bg-white hover:text-black ${isActiveParent ? 'bg-white text-black' : ''
                       }`}
-                    onClick={() => toggleExpand(item.label)}
-                    role="menuitem"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') toggleExpand(item.label);
-                    }}
                   >
+                    {item.icon}
+                    <span className="custom-label">{item.label}</span>
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => handleMenuClick(item)}
+                    className="flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 hover:bg-gray-100 transition px-4"
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </button>
+                )}
+              </li>
+            );
+          })}
 
-                    <div className="flex items-center gap-2">
-                      {item.icon}
-                      <span className="custom-label">{item.label}</span>
-                    </div>
-                    <div className="ml-3">
-                      {expandedMenus[item.label] ? (
-                        <ChevronUp size={16} />
-                      ) : (
-                        <ChevronDown size={16} />
-                      )}
-                    </div>
-                  </div>
-
-                  {expandedMenus[item.label] && item.subItems && (
-                    <ul className="custom-sub-ul ml-6 mt-1 sub-list-none">
-                      {item.subItems.map((sub) => (
-                        <li className="custom-sub-li" key={sub.label}>
-                          <Link to={sub.to} className="flex items-center gap-2 px-2 py-1 hover:bg-gray-200 rounded">
-                            {sub.icon}
-                            <span className="custom-label">{sub.label}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </>
-
-
-              ) : item.to ? (
-                <Link
-                  to={item.to}
-                  className="custom-collapse-button flex items-center space-x-2 p-2 rounded transition px-4 hover:bg-white hover:text-black"
-                >
-                  {item.icon}
-                  <span className="custom-label">{item.label}</span>
-                </Link>
-
-              ) : (
-                <button
-                  onClick={() => handleMenuClick(item)}
-                  className="flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 rounded hover:bg-gray-100 transition px-4"
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </button>
-              )}
-            </li>
-          ))}
         </ul>
 
       </div>

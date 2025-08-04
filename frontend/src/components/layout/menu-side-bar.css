@@ -90,7 +90,7 @@ ul {
   cursor: pointer; /* 👈 CHÍNH NÓ */
 }
 .custom-collapse-button:hover {
-  background-color: white;
+  background-color: rgb(175, 175, 175);
   color: black;
 }
 .custom-collapse-button:hover svg {
@@ -104,9 +104,17 @@ ul {
   cursor: pointer; /* 👈 CHÍNH NÓ */
 }
 .custom-sub-li:hover {
-  background-color: #f0f0f0;
+  background-color: rgb(175, 175, 175);
   color: black;
 }
 .custom-sub-li:hover a {
   color: black;
 }
+.active {
+  background-color: white;
+  color: black;
+}
+.active a {
+  color: black;
+}
+
