@@ -25,11 +25,11 @@ export const refreshAccessToken = async () => {
 
     return newAccessToken;
   } catch (err) {
+      // refresh token expired hoặc bị revoke
     if (err.response?.status === 401) {
       window.location.href = '/login'; // hoặc navigate('/login')
       //ko co token
     } else if (err.response?.status === 400) {
-      // refresh token expired hoặc bị revoke
       window.location.href = '/unauthorized';
     }
     localStorage.removeItem('accessToken');

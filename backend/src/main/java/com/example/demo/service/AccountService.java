@@ -83,10 +83,6 @@ public class AccountService {
 		RefreshToken token = refreshTokenRepository.findByToken(refreshTokenStr)
 				.orElseThrow(() -> new IllegalArgumentException("Refresh token not exist"));
 
-//	    if (token.isRevoked()) {
-//	        throw new IllegalArgumentException("Refresh token đã bị thu hồi");
-//	    }
-
 		token.setRevoked(true);
 		refreshTokenRepository.save(token);
 	}
@@ -109,6 +105,7 @@ public class AccountService {
 			throw new IllegalStateException("User not found");
 		}
 
+		System.out.println("oke ne");
 		return jwtUtil.generateAccessToken(user);
 	}
 

@@ -14,6 +14,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Navigate } from 'react-router-dom';
 import { isTokenExpired } from './utils/jwtUtils';  // hoặc nơi bạn để hàm này
 import { refreshAccessToken } from './services/authService';
+import MenuSidebar from './components/layout/MenuSidebar'
 
 function AppWrapper() {
   // Vì useNavigate phải dùng trong BrowserRouter
@@ -30,35 +31,34 @@ function App() {
 
 
 
-useEffect(() => {
-  const checkLogin = async () => {
-    const hasLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    if (!hasLoggedIn) {
+  useEffect(() => {
+    const checkLogin = async () => {
+      const hasLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      if (!hasLoggedIn) {
+        setAuthChecked(true);
+        return; // không gọi refresh
+      } else {
+        const token = localStorage.getItem('accessToken');
+        if (!token || isTokenExpired(token)) {
+          try {
+            // await refreshAccessToken();
+          } catch (err) {
+            localStorage.removeItem('isLoggedIn');
+            setAuthChecked(true);
+            navigate('/login');
+            return;
+          }
+        }
+      }
       setAuthChecked(true);
-      return; // không gọi refresh
-    }
+    };
 
-    // const token = localStorage.getItem('accessToken');
-    // if (!token || isTokenExpired(token)) {
-    //   try {
-    //     // await refreshAccessToken();
-    //   } catch (err) {
-    //     localStorage.removeItem('isLoggedIn');
-    //     setAuthChecked(true);
-    //     navigate('/login');
-    //     return;
-    //   }
-    // }
-
-    setAuthChecked(true);
-  };
-
-  checkLogin();
-}, [navigate]);
+    checkLogin();
+  }, [navigate]);
 
 
 
-// if (!authChecked) return <Navigate to="/login" replace />;
+  // if (!authChecked) return <Navigate to="/login" replace />;
 
 
   return (
@@ -66,26 +66,25 @@ useEffect(() => {
       <HeaderMobile />
       <main className="flex-grow-1" style={{ marginTop: '100px' }}>
         <Routes>
+          {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route
-            path="/admin/home"
-            element={
-              <ProtectedRoute requiredRole="ADMIN">
-                <AdminHomePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/products"
-            element={
-              <ProtectedRoute requiredRole="ADMIN">
-                <AdminProductList />
-              </ProtectedRoute>
-            }
-          />
           <Route path="/home" element={<CustomerHomePage />} />
+
+          {/* Admin Layout với Nested Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRole="ADMIN">
+                <MenuSidebar />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="home" element={<AdminHomePage />} />
+            <Route path="products" element={<AdminProductList />} />
+            {/* có thể thêm các route con khác nếu cần */}
+          </Route>
         </Routes>
       </main>
       <Footer />

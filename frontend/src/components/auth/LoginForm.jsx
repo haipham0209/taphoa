@@ -25,18 +25,13 @@ const LoginForm = () => {
       if (role === 'ADMIN') navigate('/admin/home');
       else navigate('/home');
     } catch (err) { 
-      
+      localStorage.setItem('isLoggedIn', 'false');
       // let message = err.response.message;
       let message = 'Login failed';
-
       if (err.response) {
         const status = err.response.status;
-
         if (status === 401) {
           message = 'Email or password invalid';
-
-
-
         } else if (status === 403) {
           message = 'Your account is currently not available. Please contact the administrator for more information.';
         } else if (status >= 500) {
@@ -45,10 +40,8 @@ const LoginForm = () => {
       } else {
         message = 'Can not connect to the server';
       }
-
       setError(message);
     }
-
   };
 
   return (

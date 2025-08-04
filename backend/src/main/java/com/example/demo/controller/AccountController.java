@@ -46,10 +46,7 @@ public class AccountController {
 		if (refreshToken != null) {
 			authService.logout(refreshToken);
 			// Xóa cookie bằng cách set lại với maxAge = 0
-			ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "").httpOnly(true).secure(false) // true
-																												// nếu
-																												// dùng
-																												// HTTPS
+			ResponseCookie clearCookie = ResponseCookie.from("refreshToken", "").httpOnly(true).secure(false) 
 					.path("/").sameSite("None") // nếu dùng cross-origin
 					.maxAge(0) // xóa ngay
 					.build();

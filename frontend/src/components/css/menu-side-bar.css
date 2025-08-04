@@ -1,0 +1,47 @@
+.custom-home-menu {
+  max-width: 15%;
+  min-height: 100vh;
+  margin-top: -100px;
+  background-color: rgba(92, 92, 92, 0.962) !important;
+  /* Màu xám nhạt */
+
+}
+
+a {
+  text-decoration: none;
+  font-size: 19px;
+  color: aliceblue;
+}
+
+ul {
+  list-style-type: none;
+  /* padding-left: 0; nếu muốn canh lề sát */
+  margin: 0;
+  padding-inline-start: 15px;
+}
+
+li {
+  color: aliceblue;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.p-4 {
+  padding: 0 !important;
+}
+
+.flex-grow {
+  min-height: 100%;
+}
+
+.custom-collapse-button {
+  all: unset; /* Xoá mọi style mặc định */
+  background-color: rgba(92, 92, 92, 0.962);
+  color: aliceblue;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
