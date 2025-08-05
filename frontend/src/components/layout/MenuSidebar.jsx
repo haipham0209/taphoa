@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 import {
   LayoutDashboard,
@@ -14,9 +13,11 @@ import {
   Tag,
   Box
 } from 'lucide-react';
+
 import { logout } from '../../services/authService';
 import './menu-side-bar.css';
 
+// menuItems phải khai báo trước
 const menuItems = [
   { label: 'Home', icon: <LayoutDashboard size={25} />, to: '/admin/home' },
   { label: 'Custommers', icon: <Users size={25} />, to: '/admin/users' },
@@ -33,11 +34,36 @@ const menuItems = [
   { label: 'Log Out', icon: <LogOut size={25} />, action: 'logout' },
 ];
 
+// Sau khi menuItems được định nghĩa, mới tách menu
+const bottomMenuLabels = ['System setting', 'Log Out'];
+const bottomMenuItems = menuItems.filter(item => bottomMenuLabels.includes(item.label));
+const mainMenuItems = menuItems.filter(item => !bottomMenuLabels.includes(item.label));
+
+
 export default function AdminMenu() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  // Thêm useEffect này để khởi tạo expandedMenus khi currentPath thay đổi
+  useEffect(() => {
+    const newExpandedMenus = {};
+    mainMenuItems.forEach(item => {
+      if (item.subItems) {
+        // Mở menu con nếu currentPath khớp với sub item
+        const shouldExpand = item.subItems.some(sub => currentPath.startsWith(sub.to));
+        if (shouldExpand) {
+          newExpandedMenus[item.label] = true;
+        }
+      }
+    });
+    setExpandedMenus(newExpandedMenus);
+  }, [currentPath]);
+
+  // Các hàm và phần return vẫn giữ nguyên
   const toggleExpand = (label) => {
     setExpandedMenus((prev) => ({
       ...prev,
@@ -57,8 +83,6 @@ export default function AdminMenu() {
     navigate('/login');
   };
 
-  const location = useLocation();
-  const currentPath = location.pathname;
 
 
 
@@ -68,29 +92,22 @@ export default function AdminMenu() {
 
   return (
 
-    // <div className="w-64 h-screen bg-white shadow-lg p-4 flex flex-col custom-home-menu">
-    <div className="w-64 h-full flex flex-col bg-white shadow-lg p-4 custom-home-menu">
+    <div className="w-64 h-screen bg-white shadow-lg flex flex-col custom-home-menu">
+      {/* <div className="w-64 h-full flex flex-col bg-white shadow-lg p-4 custom-home-menu"> */}
 
-      {/* Top menu */}
-      <div className="flex-grow">
-        {/* <h2 className="text-xl font-semibold">Menu</h2> */}
-        <div><a href="">Menu</a></div>
+      {/* Top menu items */}
+      <div>
         <ul className="list-none hover:bg-white transition-colors duration-200">
-          {menuItemsWithoutLogout.map((item) => {
-            const isActiveParent =
-              item.to && currentPath.startsWith(item.to) && !item.subItems;
-
-            const hasActiveSub =
-              item.subItems &&
-              item.subItems.some((sub) => currentPath.startsWith(sub.to));
+          {mainMenuItems.map((item) => {
+            const isActiveParent = item.to && currentPath.startsWith(item.to) && !item.subItems;
+            const hasActiveSub = item.subItems && item.subItems.some((sub) => currentPath.startsWith(sub.to));
 
             return (
               <li key={item.label}>
                 {item.subItems ? (
                   <>
                     <div
-                      className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${hasActiveSub ? 'active' : ''
-                        }`}
+                      className={`custom-collapse-button flex items-center justify-between cursor-pointer px-4 py-2 transition w-full ${hasActiveSub ? 'active' : ''}`}
                       onClick={() => toggleExpand(item.label)}
                       role="menuitem"
                       tabIndex={0}
@@ -103,29 +120,19 @@ export default function AdminMenu() {
                         <span className="custom-label">{item.label}</span>
                       </div>
                       <div className="ml-3">
-                        {expandedMenus[item.label] ? (
-                          <ChevronUp size={16} />
-                        ) : (
-                          <ChevronDown size={16} />
-                        )}
+                        {expandedMenus[item.label] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </div>
                     </div>
 
-
-                    {(expandedMenus[item.label] || hasActiveSub) && (
+                    {(expandedMenus[item.label] || (hasActiveSub && !expandedMenus.hasOwnProperty(item.label))) && (
                       <ul className="custom-sub-ul ml-6 mt-1 sub-list-none">
                         {item.subItems.map((sub) => {
                           const isActiveSub = currentPath === sub.to;
                           return (
-                            <li
-                              className={`custom-sub-li ${isActiveSub ? 'active' : ''
-                                }`}
-                              key={sub.label}
-                            >
+                            <li className={`custom-sub-li ${isActiveSub ? 'active' : ''}`} key={sub.label}>
                               <Link
                                 to={sub.to}
-                                className={`flex items-center gap-2 px-2 py-1 hover:bg-gray-200 ${isActiveSub ? '' : ''
-                                  }`}
+                                className={`flex items-center gap-2 px-2 py-1 hover:bg-gray-200`}
                               >
                                 {sub.icon}
                                 <span className="custom-label">{sub.label}</span>
@@ -136,46 +143,57 @@ export default function AdminMenu() {
                       </ul>
                     )}
                   </>
-                ) : item.to ? (
+                ) : (
                   <Link
                     to={item.to}
-                    className={`custom-collapse-button flex items-center space-x-2 p-2 transition px-4 hover:bg-white hover:text-black ${isActiveParent ? 'bg-white text-black' : ''
-                      }`}
+                    className={`custom-collapse-button flex items-center space-x-2 p-2 transition px-4 hover:bg-white hover:text-black ${isActiveParent ? 'bg-white text-black' : ''}`}
                   >
                     {item.icon}
                     <span className="custom-label">{item.label}</span>
                   </Link>
-                ) : (
-                  <button
-                    onClick={() => handleMenuClick(item)}
-                    className="flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 hover:bg-gray-100 transition px-4"
-                  >
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </button>
                 )}
               </li>
             );
           })}
-
         </ul>
-
       </div>
-      {/* Nút Log Out nằm dưới cùng, không nằm trong flex-grow */}
-      {logoutItem && (
-        <div className="mt-4">
-          <button
-            onClick={() => handleMenuClick(logoutItem)}
-            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 rounded hover:bg-gray-100 transition w-full justify-start"
-          >
-            {logoutItem.icon}
-            <span>{logoutItem.label}</span>
-          </button>
-        </div>
-      )}
+
+      {/* Bottom menu items: System setting & Logout */}
+      <div className="mt-auto py-4 border-t">
+        {bottomMenuItems.map((item) => {
+          return item.to ? (
+            <Link
+              key={item.label}
+              to={item.to}
+              className="custom-bottom-nav-menu flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 rounded hover:bg-gray-100 transition w-full justify-start"
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          ) : (
+            <div
+              key={item.label}
+              onClick={() => handleMenuClick(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') handleMenuClick(item);
+              }}
+              className="custom-bottom-nav-menu flex items-center gap-2 text-gray-700 hover:text-blue-600 p-2 rounded hover:bg-gray-100 transition w-full justify-start cursor-pointer"
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </div>
+          );
+        })}
+      </div>
 
 
-      {showConfirm && (
+
+
+
+
+      {/* {showConfirm && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black bg-opacity-40" />
           <div className="z-50 bg-white rounded shadow-lg p-6 w-[90%] max-w-sm mx-auto">
@@ -196,7 +214,7 @@ export default function AdminMenu() {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

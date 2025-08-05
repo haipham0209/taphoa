@@ -3,7 +3,21 @@
   min-height: 100vh;
   margin-top: -100px;
   background-color: rgba(18, 18, 18, 0.962) !important;
-  /* Màu xám nhạt */
+  display: flex;
+  flex-direction: column;
+  /* ✅ */
+  justify-content: space-between;
+  box-shadow: 6px 0 10px 0px rgba(0, 0, 0, 0.5) !important;
+}
+
+.custom-bottom-nav-menu {
+  color: rgb(197, 197, 197);
+  font-size: 17px;
+}
+
+.custom-bottom-nav-menu:hover {
+  color: rgb(255, 255, 255);
+  font-size: 17px;
 }
 
 a {
@@ -37,7 +51,8 @@ ul {
 .p-4 {
   padding: 0 !important;
 }
-.px-4{
+
+.px-4 {
   padding-left: 0 !important;
 }
 
@@ -54,19 +69,24 @@ ul {
   background-color: none;
   /* margin-left: -2rem; */
 }
-.custom-label{
+
+.custom-label {
   margin-left: 10px;
 }
-.sub-list-none{
+
+.sub-list-none {
   background-color: rgb(71, 71, 71);
   margin-left: 15px;
 }
-.custom-sub-ul{
+
+.custom-sub-ul {
   padding-left: 2px;
 }
-.custom-sub-li{
+
+.custom-sub-li {
   border-bottom: 1.6px solid black;
 }
+
 .menu-label {
   transition: background-color 0.3s, color 0.3s;
 }
@@ -89,12 +109,15 @@ ul {
 .custom-collapse-button {
   transition: background-color 0.3s ease, color 0.3s ease;
   white-space: nowrap;
-  cursor: pointer; /* 👈 CHÍNH NÓ */
+  cursor: pointer;
+  /* 👈 CHÍNH NÓ */
 }
+
 .custom-collapse-button:hover {
   background-color: rgb(175, 175, 175);
   color: black;
 }
+
 .custom-collapse-button:hover svg {
   color: black;
 }
@@ -103,21 +126,24 @@ ul {
 .custom-sub-li {
   color: aliceblue;
   transition: background-color 0.3s ease, color 0.3s ease;
-  cursor: pointer; /* 👈 CHÍNH NÓ */
+  cursor: pointer;
+  /* 👈 CHÍNH NÓ */
 }
+
 .custom-sub-li:hover {
   background-color: rgb(175, 175, 175);
   color: black;
 }
+
 .custom-sub-li:hover a {
   color: black;
 }
+
 .active {
   background-color: white;
   color: black;
 }
+
 .active a {
   color: black;
 }
-
-
