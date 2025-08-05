@@ -64,7 +64,8 @@ function App() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <HeaderMobile />
-      <main className="flex-grow-1" style={{ marginTop: '100px' }}>
+<main className="flex flex-row" style={{ marginTop: '100px' }}>
+
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
@@ -81,9 +82,9 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/admin/home" element={<AdminHomePage />} />
-            <Route path="/admin/users" element={<AdminCustomersManager />} />
-            <Route path="/admin/products" element={<AdminProductList />} />
+            <Route path="home" element={<AdminHomePage />} />
+            <Route path="users" element={<AdminCustomersManager />} />
+            <Route path="products" element={<AdminProductList />} />
             {/* có thể thêm các route con khác nếu cần */}
           </Route>
           
